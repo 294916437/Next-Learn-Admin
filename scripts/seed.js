@@ -1,4 +1,5 @@
-const { db } = require('@vercel/postgres');
+const { db, createClient } = require('@vercel/postgres');
+const { getClient } = require('./pg-local');
 const {
   invoices,
   customers,
@@ -161,7 +162,9 @@ async function seedRevenue(client) {
 }
 
 async function main() {
-  const client = await db.connect();
+  const client = process.env.LOCAL_VERCEL_POSTGRES
+    ? await getClient()
+    : await db.connect();
 
   await seedUsers(client);
   await seedCustomers(client);
